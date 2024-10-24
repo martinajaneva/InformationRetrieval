@@ -50,13 +50,13 @@ def vsm_search_with_inverted_index_and_tfidf(search_query, inverted_index, doc_t
     if not matched_docs:
         return []
 
-    preprocessed_docs = preprocess_documents(doc_term_counts)
     preprocessed_query = preprocess_query(search_query)
+    preprocessed_docs = preprocess_documents(doc_term_counts)
 
     # doc_names = list(relevant_docs.keys())
     # doc_texts = [' '.join(term_count.keys()) for term_count in relevant_docs.values()]
-    doc_names = list(preprocessed_docs.keys())
     doc_texts = list(preprocessed_docs.values())
+    doc_names = list(preprocessed_docs.keys())
 
     tfidf_vectorizer = TfidfVectorizer(tokenizer=processing_tokenize)
     tfidf_matrix = tfidf_vectorizer.fit_transform(doc_texts)
