@@ -36,13 +36,22 @@ def inverted_index_build(file_path):
     return inverted_index, document_count
 
 def save_inverted_index(inverted_index, batch_number):
-    directory = 'batches'
+    directory = 'batches_inverted_index'
     if not os.path.exists(directory):
         os.makedirs(directory)
     filename = os.path.join(directory, f'inverted_index_batch_{batch_number}.pkl.gz')
     with gzip.open(filename, 'wb') as f:
         pickle.dump(inverted_index, f)
     print(f"Saved inverted index for batch {batch_number} to {filename}")
+
+def save_term_counter(term_counter, batch_number):
+    directory = 'batches_term_counter'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    filename = os.path.join(directory, f'document_term_counts_batch_{batch_number}.pkl.gz')
+    with gzip.open(filename, 'wb') as f:
+        pickle.dump(term_counter, f)
+    print(f"Saved document term counts for batch {batch_number} to {filename}")
 
 
 def retrieve_inverted_index_doc(query, inverted_index, document_count):
