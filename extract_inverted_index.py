@@ -12,40 +12,33 @@ References include documentation of multiprocessing in Python.
 https://docs.python.org/3/library/multiprocessing.html
 """
 
-def process_batches(files_total, batch_size, text_files, processes_val, inverted_index, term_counter):
+def process_batches(files_total, batch_size, text_files, processes_val, inverted_index):
     for i in range(0, files_total, batch_size):
         batch = text_files[i:i+batch_size]
-        print(f"Processing batch {batch // batch_size + 1}")
+        num_batch = batch // batch_size + 1
+        print(f"Processing batch {num_batch}")
         with Pool(processes=processes_val) as pool:
             res = pool.map(inverted_index_build, batch)
 
-        for id, count in res:
+        for id in res:
             for token, files in id.items():
                 inverted_index[token].extend(files)
-            term_counter.update(count)
-
-        num_batch = batch // batch_size + 1
 
         save_inverted_index(inverted_index=inverted_index, batch_number=num_batch)
         print(f"Inverted index saved batch {num_batch}")
         inverted_index.clear()
-        
-        save_term_counter(term_counter=term_counter, batch_number=num_batch)
-        print(f"Document term saved batch {num_batch}")
-        term_counter.clear()
 
-def multiprocessing(directory_path, batch_size = 20000):
+def multiprocessing(directory_path, batch_size = 300):
     path = Path(directory_path).rglob('*.txt')
     text_files = list(path)
     files_total = len(text_files)
 
     inverted_index = defaultdict(list)
-    term_counter = {}
 
     processes_val = cpu_count()
 
     start_time = time.time()
-    process_batches(files_total, batch_size, text_files, processes_val, inverted_index, term_counter)
+    process_batches(files_total, batch_size, text_files, processes_val, inverted_index)
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds for {files_total} files")
 

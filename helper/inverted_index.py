@@ -12,28 +12,25 @@ https://shivammehta25.github.io/posts/your-own-mini-google-search-inverted-index
 """
 
 """
-Builds inverted index from a single text file.
-Keeps track of the word counts in the document.
+Builds inverted index from a single text file by keeping track of the file name of token.
 Args:
     file_path (str): The file path to the single text data.
 Returns:
     inverted_index (defaultdict)
-    document_count (dict)
 """
 def inverted_index_build(file_path):
     inverted_index = defaultdict(list)
     filename = file_path.name
 
-    document_count = {}
     with open(file_path, 'r', encoding='utf-8') as file:
         text = file.read()
         tokens = processing_tokenize(text)
         term_counter = Counter(tokens)
-        document_count[filename] = term_counter
+        
         for token in term_counter:
             inverted_index[token].append(filename)
 
-    return inverted_index, document_count
+    return inverted_index
 
 def save_inverted_index(inverted_index, batch_number):
     directory = 'batches_inverted_index'
@@ -43,16 +40,6 @@ def save_inverted_index(inverted_index, batch_number):
     with gzip.open(filename, 'wb') as f:
         pickle.dump(inverted_index, f)
     print(f"Saved inverted index for batch {batch_number} to {filename}")
-
-def save_term_counter(term_counter, batch_number):
-    directory = 'batches_term_counter'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    filename = os.path.join(directory, f'document_term_counts_batch_{batch_number}.pkl.gz')
-    with gzip.open(filename, 'wb') as f:
-        pickle.dump(term_counter, f)
-    print(f"Saved document term counts for batch {batch_number} to {filename}")
-
 
 def retrieve_inverted_index_doc(query, inverted_index, document_count):
     retrieved_documents = set()
