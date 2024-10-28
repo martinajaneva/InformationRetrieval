@@ -3,6 +3,9 @@ import pickle
 from process_text import processing_tokenize
 from collections import defaultdict, Counter
 import os
+import pandas as pd
+import concurrent.futures
+import string
 
 """
 Inverted index class.
@@ -41,13 +44,18 @@ def save_inverted_index(inverted_index, batch_number):
         pickle.dump(inverted_index, f)
     print(f"Saved inverted index for batch {batch_number} to {filename}")
 
-def retrieve_inverted_index_doc(query, inverted_index, document_count):
+def retrieve_inverted_index_doc(query):
     retrieved_documents = set()
     processed_query = processing_tokenize(query)
 
     for token in processed_query:
-        if token in inverted_index:
-            retrieved_documents.update(inverted_index[token])
-
-    return {doc : document_count[doc] for doc in retrieved_documents if doc in document_count}
-    
+        first_char = token[0].lower();
+        parquet_file = f'inverted_index_{first_char}.parquet' if first_char in string.ascii_lowercase else 'inverted_index_other.parquet'
+        
+        if os.path.exists(parquet_file):
+            df = pd.read_parquet(parquet_file)
+            matching_terms = df[df['term'] == token]
+            for _, row in matching_terms.iterrows():
+                retrieved_documents.update(row['posting'])
+       
+    return retrieved_documents

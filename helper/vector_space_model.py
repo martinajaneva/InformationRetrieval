@@ -1,7 +1,13 @@
-from process_text import processing_tokenize
+from process_text import processing_tokenize, tokenize
 from inverted_index import retrieve_inverted_index_doc
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import concurrent.futures
+
+
+def load_document(document):
+    with open(f"Data/full_docs/{document}", 'r', encoding='utf-8') as f:
+        return f.read()
 
 """
 Preprocesses document term counts for TF-IDF vectorization.
@@ -13,9 +19,11 @@ Returns:
 """
 def preprocess_documents(doc_term_counts):
     preprocessed_texts = {}
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        doc_texts = list(executor.map(load_document, doc_term_counts))
     
-    for doc, term_count in doc_term_counts.items():
-        preprocessed_texts[doc] = ' '.join(term_count.keys())
+    for doc, term_count in zip(doc_term_counts, doc_texts):
+        preprocessed_texts[doc] = term_count
     return preprocessed_texts
 
 """
@@ -44,25 +52,24 @@ Args:
 Returns:
     list: A sorted list of tuples containing document names and their corresponding similarity scores.
 """
-def vsm_search_with_inverted_index_and_tfidf(search_query, inverted_index, doc_term_counts):
-    matched_docs = retrieve_inverted_index_doc(search_query, inverted_index, doc_term_counts)
+def vsm_search_with_inverted_index_and_tfidf(search_query):
+    matched_docs = retrieve_inverted_index_doc(search_query)
 
     if not matched_docs:
         return []
 
     preprocessed_query = preprocess_query(search_query)
-    preprocessed_docs = preprocess_documents(doc_term_counts)
+    preprocessed_docs = preprocess_documents(matched_docs)
 
-    # doc_names = list(relevant_docs.keys())
-    # doc_texts = [' '.join(term_count.keys()) for term_count in relevant_docs.values()]
     doc_texts = list(preprocessed_docs.values())
     doc_names = list(preprocessed_docs.keys())
 
-    tfidf_vectorizer = TfidfVectorizer(tokenizer=processing_tokenize)
+    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, max_features=2**14, ngram_range=(1, 2))
     tfidf_matrix = tfidf_vectorizer.fit_transform(doc_texts)
     query_vector = tfidf_vectorizer.transform([preprocessed_query])
     similarity_scores = cosine_similarity(query_vector, tfidf_matrix).flatten()
 
+    names_cleaned_doc = [(doc.replace('output_', '').replace('.txt', '')) for doc in doc_names]
     ranked_documents = sorted(zip(doc_names, similarity_scores), key=lambda x: x[1], reverse=True)
 
     return ranked_documents

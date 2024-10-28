@@ -11,13 +11,16 @@ Args:
 Returns:
     list: A list of filtered tokens after processing.
 """
+def tokenize(text):
+    return re.findall(r'\b\w+\b', text.lower())
+
 def processing_tokenize(text):
-    processed_text = re.findall(r'\b\w+\b', text.lower())
+    processed_text = tokenize(text)
     lemmatizer = nltk.WordNetLemmatizer()
     stopwords = nltk.corpus.stopwords.words("english")
 
     filter_words = [token for token in processed_text if token not in stopwords]
     lemmas = [lemmatizer.lemmatize(token) for token in filter_words]
-    stopwords = nltk.corpus.stopwords.words("english")
+    #stopwords = nltk.corpus.stopwords.words("english")
     filtered_tokens = [word for word in lemmas if word not in stopwords]
     return filtered_tokens
