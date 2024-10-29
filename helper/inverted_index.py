@@ -46,15 +46,16 @@ def save_inverted_index(inverted_index, batch_number):
 def retrieve_inverted_index_doc(query):
     retrieved_documents = set()
     processed_query = processing_tokenize(query)
+    directory_path = "letter_files"
 
     for token in processed_query:
         first_char = token[0].lower();
-        parquet_file = f'inverted_index_{first_char}.parquet' if first_char in string.ascii_lowercase else 'inverted_index_other.parquet'
+        parquet_file = os.path.join(directory_path, f'inverted_index_{first_char}.parquet') if first_char in string.ascii_lowercase else 'inverted_index_other.parquet'
         
         if os.path.exists(parquet_file):
             df = pd.read_parquet(parquet_file)
             matching_terms = df[df['term'] == token]
             for _, row in matching_terms.iterrows():
-                retrieved_documents.update(row['posting'])
+                retrieved_documents.update(row['postings'])
        
     return retrieved_documents

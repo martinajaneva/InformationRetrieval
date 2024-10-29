@@ -1,9 +1,11 @@
-from process_text import processing_tokenize, tokenize
-from inverted_index import retrieve_inverted_index_doc
+import warnings
+from helper.process_text import processing_tokenize, tokenize
+from helper.inverted_index import retrieve_inverted_index_doc
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import concurrent.futures
 
+warnings.filterwarnings("ignore", message="The parameter 'token_pattern' will not be used since 'tokenizer' is not None")
 
 def load_document(document):
     with open(f"Data/full_docs/{document}", 'r', encoding='utf-8') as f:
@@ -54,13 +56,11 @@ Returns:
 """
 def vsm_search_with_inverted_index_and_tfidf(search_query):
     matched_docs = retrieve_inverted_index_doc(search_query)
-
     if not matched_docs:
         return []
-
+    
     preprocessed_query = preprocess_query(search_query)
     preprocessed_docs = preprocess_documents(matched_docs)
-
     doc_texts = list(preprocessed_docs.values())
     doc_names = list(preprocessed_docs.keys())
 
@@ -70,6 +70,6 @@ def vsm_search_with_inverted_index_and_tfidf(search_query):
     similarity_scores = cosine_similarity(query_vector, tfidf_matrix).flatten()
 
     names_cleaned_doc = [(doc.replace('output_', '').replace('.txt', '')) for doc in doc_names]
-    ranked_documents = sorted(zip(doc_names, similarity_scores), key=lambda x: x[1], reverse=True)
+    ranked_documents = sorted(zip(names_cleaned_doc, similarity_scores), key=lambda x: x[1], reverse=True)
 
     return ranked_documents

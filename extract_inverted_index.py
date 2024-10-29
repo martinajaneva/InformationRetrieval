@@ -46,7 +46,7 @@ if __name__ == "__main__":
     base_path = os.getcwd()
 
     # This can be adapted with the path to the data
-    data_path = "Data/full_docs_small"
+    data_path = "Data"
     full_path = os.path.join(base_path, data_path)
     print(full_path)
 
