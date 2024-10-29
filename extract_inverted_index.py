@@ -3,7 +3,7 @@ from multiprocessing import cpu_count, Pool
 import os
 from pathlib import Path
 import time
-from helper.inverted_index import inverted_index_build, save_inverted_index, save_term_counter
+from helper.inverted_index import inverted_index_build, save_inverted_index
 
 """
 Extracting inverted index class.
@@ -15,7 +15,7 @@ https://docs.python.org/3/library/multiprocessing.html
 def process_batches(files_total, batch_size, text_files, processes_val, inverted_index):
     for i in range(0, files_total, batch_size):
         batch = text_files[i:i+batch_size]
-        num_batch = batch // batch_size + 1
+        num_batch = i // batch_size + 1
         print(f"Processing batch {num_batch}")
         with Pool(processes=processes_val) as pool:
             res = pool.map(inverted_index_build, batch)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     base_path = os.getcwd()
 
     # This can be adapted with the path to the data
-    data_path = "full_docs"
+    data_path = "Data/full_docs_small"
     full_path = os.path.join(base_path, data_path)
     print(full_path)
 

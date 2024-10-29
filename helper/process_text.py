@@ -21,6 +21,5 @@ def processing_tokenize(text):
 
     filter_words = [token for token in processed_text if token not in stopwords]
     lemmas = [lemmatizer.lemmatize(token) for token in filter_words]
-    #stopwords = nltk.corpus.stopwords.words("english")
     filtered_tokens = [word for word in lemmas if word not in stopwords]
     return filtered_tokens

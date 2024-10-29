@@ -18,10 +18,11 @@ Functions:
 """
 
 def loop_files(data_letter):
-    for filename in os.listdir(''):
-        print(f"Processing {filename}")
+    for filename in os.listdir('batches_inverted_index'):
+        full_path = os.path.join('batches_inverted_index', filename)
+        print(f"Processing {full_path}")
         if filename.startswith('inverted_index_batch_') and filename.endswith('.pkl.gz'):
-            with gzip.open(filename, 'rb') as file:
+            with gzip.open(full_path, 'rb') as file:
                 inverted_index = pickle.load(file)
                 for i, post in inverted_index.items():
                     char = i[0].lower()
@@ -30,16 +31,20 @@ def loop_files(data_letter):
                     else:
                         data_letter['other'].append({'term': i, 'postings': post})
 
+def save_files(data_letter):
+    directory = 'letter_files'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    for letter, data in data_letter.items():
+        df = pd.DataFrame(data)
+        file_path = os.path.join(directory, f'inverted_index_{letter}.parquet')
+        df.to_parquet(file_path, index=False)
 
 def inverted_index_distribution():
     data_letter = {letter: [] for letter in string.ascii_lowercase}
     data_letter['other'] = []
 
     loop_files(data_letter)
-
-    for letter, data in data_letter.items():
-        df = pd.DataFrame(data)
-        df.to_parqurt(f'inverted_index_{letter}.parquet', index=False)
-
+    save_files(data_letter)
 
 inverted_index_distribution()

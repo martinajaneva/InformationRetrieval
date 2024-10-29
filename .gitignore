@@ -1,2 +1,4 @@
 Data
-batches
+letter_files
+__pycache__
+batches_inverted_index
