@@ -4,7 +4,15 @@ import pandas as pd
 from retrieve_results.extracting_results import extract_results
 from retrieve_results.retrieve_map_mar import process_map_mar
 
-
+"""
+Extracts a batch of queries and their relevant documents from the dataset.
+Arguments:
+    first_row (int): The starting index for extracting queries from the dataset.
+    batch_size (int): The number of queries to extract in the current batch.
+    retrieve_docs (bool): Flag indicating whether to retrieve relevant documents for each query.
+Returns:
+    dict: A dictionary where keys are query IDs and values are dictionaries containing the query text and relevant documents.
+"""
 def extract_docs_queries(first_row, batch_size, retrieve_docs = False):
     queries_relevant_text = {}
     batch =  queries.iloc[first_row: first_row + batch_size]
@@ -22,7 +30,10 @@ def extract_docs_queries(first_row, batch_size, retrieve_docs = False):
         
     return queries_relevant_text
 
-
+"""
+Initializes the processing of queries for MAP/MAR computation or result extraction.
+Sets up necessary parameters like output file path, batch size, rank positions, and flags for header writing. 
+"""
 def initialize():
     output = 'queries/results.csv'
     file_exists = os.path.isfile(output)

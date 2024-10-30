@@ -14,6 +14,7 @@ def load_document(document):
 """
 Preprocesses document term counts for TF-IDF vectorization.
 This step prepares the documents by extracting term keys (words) from their term frequency data and concatenating them into a single string.
+References: https://scikit-learn.org/1.5/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
 Args:
     doc_term_counts (dict): A mapping of document IDs to term frequency counts.
 Returns:

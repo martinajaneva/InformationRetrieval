@@ -8,6 +8,7 @@ import pandas as pd
 
 """
 Merge class processes inverted index files and distributes the terms into separate Parquet files based on their starting letter.
+References: https://codetinkering.com/combining-dataframes-python/
 Functions:
     loop_files(data_letter):
         Iterates over files in the current directory, processes those that match the naming pattern,

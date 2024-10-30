@@ -1,5 +1,6 @@
 """
 Calculate the Average Precision at a specified rank (AP@K) for a given query
+References: https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html
 Args:
     results (list): A list of tuples (document, similarity score), sorted by highest to lowest similarity.
     relevant_set (set): A set of documents relevant to the query.
@@ -20,6 +21,7 @@ def avg_precision_at_k(results, relevant_set, k):
 
 """
 Calculate the Average Recall at a specified rank (AR@K) for a given query.
+References: https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html
 Arguments:
     results (list): A list of tuples (document, similarity score), sorted by highest to lowest similarity.
     relevant_set (set): A set of documents relevant to the query.
